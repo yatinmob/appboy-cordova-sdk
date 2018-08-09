@@ -1,4 +1,8 @@
 {
   "name": "appboy-cordova-sdk",
+<<<<<<< HEAD
   "version": "2.6.0"
+=======
+  "version": "2.5.1"
+>>>>>>> 3664773d25762a83e7272725dc9a48550131d1bf
 }

@@ -83,6 +83,6 @@
     <!-- Editing the plist for the location permission prompt -->
     <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
     <string>This app is requesting your location to better serve you content.</string>
-    </config-file>    
+    </config-file>
   </platform>
 </plugin>
