@@ -88,6 +88,7 @@ public class AppboyPlugin extends CordovaPlugin {
       // Request the permission
       cordova.requestPermission(this, LOCATION_REQUEST_CODE, LOCATION_PERMISSION);
     }
+
     mPluginInitializationFinished = true;
   }
 

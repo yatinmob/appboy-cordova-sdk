@@ -22,9 +22,11 @@
 
 ## 2.9.0
 
+#### Added
+- Updates Braze iOS version to 3.14.0.
+- Updates Braze Android version to 3.2.2.
+
 #### Changed
-- Updated Braze iOS version to 3.14.0.
-- Updated Braze Android version to 3.2.2.
 - Changed the iOS plugin to use Cocoapods instead of a framework integration.
 - Improved the look and feel of in-app messages to adhere to the latest UX and UI best practices. Changes affect font sizes, padding, and responsiveness across all message types. Now supports button border styling.
 
