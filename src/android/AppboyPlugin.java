@@ -47,6 +47,9 @@ public class AppboyPlugin extends CordovaPlugin {
   // Runtime permissions
   private static final int LOCATION_REQUEST_CODE = 2;
 
+  // Runtime permissions
+  private static final int LOCATION_REQUEST_CODE = 2;
+
   // Preference keys found in the config.xml
   private static final String APPBOY_API_KEY_PREFERENCE = "com.appboy.api_key";
   private static final String AUTOMATIC_FIREBASE_PUSH_REGISTRATION_ENABLED_PREFERENCE = "com.appboy.firebase_cloud_messaging_registration_enabled";
