@@ -1,5 +1,6 @@
 package com.appboy.cordova;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -604,7 +605,11 @@ public class AppboyPlugin extends CordovaPlugin {
   private void initializeGeofences() {
     String fineLocationPermission = "android.permission.ACCESS_FINE_LOCATION";
     if (Build.VERSION.SDK_INT >= 29) {
+<<<<<<< HEAD
       String accessBackgroundPermission = "android.permission.ACCESS_BACKGROUND_LOCATION";
+=======
+      String accessBackgroundPermission = "android.permission.ACCESS_FINE_LOCATION";
+>>>>>>> 7a7d7388555e39d709fb187a9d4987ac2c06e2e6
       // Get location permissions, if we need them
       if (cordova.hasPermission(fineLocationPermission) && cordova.hasPermission(accessBackgroundPermission)) {
         Braze.getInstance(mApplicationContext).requestLocationInitialization();
