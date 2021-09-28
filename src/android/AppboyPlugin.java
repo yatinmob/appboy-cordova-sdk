@@ -2,6 +2,7 @@ package com.appboy.cordova;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
@@ -39,6 +40,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AppboyPlugin extends CordovaPlugin {
   private static final String TAG = "BrazeCordova";
+
+  // Runtime permissions
+  private static final int LOCATION_REQUEST_CODE = 2;
 
   // Preference keys found in the config.xml
   private static final String APPBOY_API_KEY_PREFERENCE = "com.appboy.api_key";
@@ -90,8 +94,25 @@ public class AppboyPlugin extends CordovaPlugin {
 
     // Since we've likely passed the first Application.onCreate() (due to the plugin lifecycle), lets call the
     // in-app message manager and session handling now
+    initializeGeofences();
     BrazeInAppMessageManager.getInstance().registerInAppMessageManager(this.cordova.getActivity());
     mPluginInitializationFinished = true;
+  }
+
+  @Override
+  public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
+    switch (requestCode) {
+      case LOCATION_REQUEST_CODE:
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          Log.i(TAG, "Fine location permission granted.");
+          Braze.getInstance(mApplicationContext).requestLocationInitialization();
+        } else {
+          Log.i(TAG, "Fine location permission NOT granted.");
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   @Override
@@ -578,6 +599,28 @@ public class AppboyPlugin extends CordovaPlugin {
     // Return success to the callback
     callbackContext.success();
     return true;
+  }
+
+  private void initializeGeofences() {
+    String fineLocationPermission = "android.permission.ACCESS_FINE_LOCATION";
+    if (Build.VERSION.SDK_INT >= 29) {
+      String accessBackgroundPermission = "android.permission.ACCESS_BACKGROUND_LOCATION";
+      // Get location permissions, if we need them
+      if (cordova.hasPermission(fineLocationPermission) && cordova.hasPermission(accessBackgroundPermission)) {
+        Braze.getInstance(mApplicationContext).requestLocationInitialization();
+      } else {
+        // Request the permission
+        cordova.requestPermissions(this, LOCATION_REQUEST_CODE, new String[]{fineLocationPermission, accessBackgroundPermission});
+      }
+    } else {
+      // Get location permissions, if we need them
+      if (cordova.hasPermission(fineLocationPermission)) {
+        Braze.getInstance(mApplicationContext).requestLocationInitialization();
+      } else {
+        // Request the permission
+        cordova.requestPermission(this, LOCATION_REQUEST_CODE, fineLocationPermission);
+      }
+    }
   }
 
   private static EnumSet<CardCategory> getCategoriesFromJSONArray(JSONArray jsonArray) throws JSONException {
