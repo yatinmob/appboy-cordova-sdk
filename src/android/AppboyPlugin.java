@@ -2,6 +2,7 @@ package com.appboy.cordova;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
@@ -41,6 +42,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AppboyPlugin extends CordovaPlugin {
   private static final String TAG = "BrazeCordova";
 
+  // Runtime permissions
+  private static final int LOCATION_REQUEST_CODE = 2;
+
   // Preference keys found in the config.xml
   private static final String APPBOY_API_KEY_PREFERENCE = "com.appboy.api_key";
   private static final String AUTOMATIC_FIREBASE_PUSH_REGISTRATION_ENABLED_PREFERENCE = "com.appboy.firebase_cloud_messaging_registration_enabled";
@@ -72,6 +76,7 @@ public class AppboyPlugin extends CordovaPlugin {
   // Content Card method names
   private static final String GET_CONTENT_CARDS_FROM_SERVER_METHOD = "getContentCardsFromServer";
   private static final String GET_CONTENT_CARDS_FROM_CACHE_METHOD = "getContentCardsFromCache";
+  private static final String LOG_CONTENT_CARDS_DISPLAYED_METHOD = "logContentCardsDisplayed";
   private static final String LOG_CONTENT_CARDS_CLICKED_METHOD = "logContentCardClicked";
   private static final String LOG_CONTENT_CARDS_IMPRESSION_METHOD = "logContentCardImpression";
   private static final String LOG_CONTENT_CARDS_DISMISSED_METHOD = "logContentCardDismissed";
@@ -90,8 +95,25 @@ public class AppboyPlugin extends CordovaPlugin {
 
     // Since we've likely passed the first Application.onCreate() (due to the plugin lifecycle), lets call the
     // in-app message manager and session handling now
+    initializeGeofences();
     BrazeInAppMessageManager.getInstance().registerInAppMessageManager(this.cordova.getActivity());
     mPluginInitializationFinished = true;
+  }
+
+  @Override
+  public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
+    switch (requestCode) {
+      case LOCATION_REQUEST_CODE:
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          Log.i(TAG, "Fine location permission granted.");
+          Braze.getInstance(mApplicationContext).requestLocationInitialization();
+        } else {
+          Log.i(TAG, "Fine location permission NOT granted.");
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   @Override
@@ -310,6 +332,9 @@ public class AppboyPlugin extends CordovaPlugin {
       case GET_CONTENT_CARDS_FROM_SERVER_METHOD:
       case GET_CONTENT_CARDS_FROM_CACHE_METHOD:
         return handleContentCardsUpdateGetters(action, callbackContext);
+      case LOG_CONTENT_CARDS_DISPLAYED_METHOD:
+        Braze.getInstance(mApplicationContext).logContentCardsDisplayed();
+        return true;
       case LOG_CONTENT_CARDS_CLICKED_METHOD:
       case LOG_CONTENT_CARDS_DISMISSED_METHOD:
       case LOG_CONTENT_CARDS_IMPRESSION_METHOD:
@@ -580,6 +605,28 @@ public class AppboyPlugin extends CordovaPlugin {
     // Return success to the callback
     callbackContext.success();
     return true;
+  }
+
+  private void initializeGeofences() {
+    String fineLocationPermission = "android.permission.ACCESS_FINE_LOCATION";
+    if (Build.VERSION.SDK_INT >= 29) {
+      String accessBackgroundPermission = "android.permission.ACCESS_BACKGROUND_LOCATION";
+      // Get location permissions, if we need them
+      if (cordova.hasPermission(fineLocationPermission) && cordova.hasPermission(accessBackgroundPermission)) {
+        Braze.getInstance(mApplicationContext).requestLocationInitialization();
+      } else {
+        // Request the permission
+        cordova.requestPermissions(this, LOCATION_REQUEST_CODE, new String[]{fineLocationPermission, accessBackgroundPermission});
+      }
+    } else {
+      // Get location permissions, if we need them
+      if (cordova.hasPermission(fineLocationPermission)) {
+        Braze.getInstance(mApplicationContext).requestLocationInitialization();
+      } else {
+        // Request the permission
+        cordova.requestPermission(this, LOCATION_REQUEST_CODE, fineLocationPermission);
+      }
+    }
   }
 
   private static EnumSet<CardCategory> getCategoriesFromJSONArray(JSONArray jsonArray) throws JSONException {

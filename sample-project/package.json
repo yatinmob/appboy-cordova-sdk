@@ -7,9 +7,7 @@
       "ios",
       "android"
     ],
-    "plugins": {
-      "cordova-plugin-appboy": {}
-    }
+    "plugins": {}
   },
   "dependencies": {
     "cordova-common": "^4.0.2",
@@ -23,7 +21,7 @@
   },
   "devDependencies": {
     "appboy-cordova-sdk": "file:../local",
-    "cordova-android": "^10.1.2",
+    "cordova-android": "^10.1.1",
     "cordova-ios": "^6.2.0"
   }
 }

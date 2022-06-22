@@ -464,6 +464,10 @@
   }
 }
 
+- (void) logContentCardsDisplayed:(CDVInvokedUrlCommand *)command {
+  [[Appboy sharedInstance] logContentCardsDisplayed];
+}
+
 - (void) getContentCardsFromServer:(CDVInvokedUrlCommand *)command {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
