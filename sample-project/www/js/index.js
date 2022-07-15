@@ -53,6 +53,7 @@ onDeviceReady: function() {
     document.getElementById("getUnreadCardCountForCategoriesBtn").addEventListener("click", getUnreadCardCountForCategories);
     document.getElementById("getAllNewsFeedCardsBtn").addEventListener("click", getAllNewsFeedCards);
     document.getElementById("getAllContentCardsBtn").addEventListener("click", getContentCardsFromServer);
+    document.getElementById("logContentCardsDisplayedBtn").addEventListener("click", logContentCardsDisplayed);
     document.getElementById("logContentCardAnalyticsBtn").addEventListener("click", logContentCardAnalytics);
     document.getElementById("addAliasBtn").addEventListener("click", addAlias);
     document.getElementById("wipeData").addEventListener("click", wipeData);
@@ -252,6 +253,10 @@ function getAllNewsFeedCards() {
 
 function getContentCardsFromServer() {
     AppboyPlugin.getContentCardsFromServer(customPluginSuccessArrayCallback("test"), customPluginErrorCallback);
+}
+
+function logContentCardsDisplayed() {
+    AppboyPlugin.logContentCardsDisplayed();
 }
 
 function logContentCardAnalytics() {
